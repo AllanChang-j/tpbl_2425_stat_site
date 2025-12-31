@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { loadPlayersData, getUniqueTeams, Player, CompetitionType } from "@/lib/data-service";
-import { DisplayUnit, getFieldKey, NUMERIC_FIELDS, PLAYER_FIELDS, UNIT_INDEPENDENT_FIELDS } from "@/lib/constants";
+import { getFieldKey, PLAYER_FIELDS, UNIT_INDEPENDENT_FIELDS } from "@/lib/constants";
 
 // Get all available columns from the first data row
 function getAllColumns(data: Player[]): string[] {
@@ -300,3 +300,4 @@ export default function PlayersPage() {
     </div>
   </div>
 );
+}
