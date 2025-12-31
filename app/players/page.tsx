@@ -217,67 +217,86 @@ export default function PlayersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold text-slate-900">球員數據</h1>
+  <div className="min-h-screen bg-gray-50">
+    <Navigation />
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-slate-900">球員數據</h1>
 
-            {/* Toggle */}
-            <select
-              value={competition}
-              onChange={(e) => setCompetition(e.target.value as CompetitionType)}
-              className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm"
-            >
-              <option value="regular">例行賽</option>
-              <option value="playin">Play-in</option>
-              <option value="playoff">Playoff</option>
-            </select>
-          </div>
+        <div className="flex items-center gap-3">
+          {/* Toggle */}
+          <select
+            value={competition}
+            onChange={(e) => setCompetition(e.target.value as CompetitionType)}
+            className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm"
+          >
+            <option value="regular">例行賽</option>
+            <option value="playin">Play-in</option>
+            <option value="playoff">Playoff</option>
+          </select>
 
-          {/* 右側：選擇欄位 */}
+          {/* 欄位選擇 */}
           <Sheet open={showColumnSelector} onOpenChange={setShowColumnSelector}>
             <SheetTrigger asChild>
               <Button variant="outline">選擇欄位 ({selectedColumns.length})</Button>
-          </SheetTrigger>
-          <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>選擇顯示欄位</SheetTitle>
-              <SheetDescription>
-                選擇要在表格中顯示的欄位。已選擇 {selectedColumns.length} 個欄位。
-              </SheetDescription>
-            </SheetHeader>
+            </SheetTrigger>
+            <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle>選擇顯示欄位</SheetTitle>
+                <SheetDescription>
+                  選擇要在表格中顯示的欄位。已選擇 {selectedColumns.length} 個欄位。
+                </SheetDescription>
+              </SheetHeader>
 
-            <div className="mt-4 space-y-2">
-              <div className="flex items-center gap-2 mb-4">
-               <Button variant="outline" size="sm" onClick={() => setSelectedColumns(allColumns)}>
-                全選
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setSelectedColumns(DEFAULT_COLUMNS)}>
-                預設
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setSelectedColumns([])}>
-                清除
-              </Button>
-            </div>
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center gap-2 mb-4">
+                  <Button variant="outline" size="sm" onClick={() => setSelectedColumns(allColumns)}>
+                    全選
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setSelectedColumns(DEFAULT_COLUMNS)}>
+                    預設
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setSelectedColumns([])}>
+                    清除
+                  </Button>
+                </div>
 
-            {allColumns.map((col) => (
-              <div key={col} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`col-${col}`}
-                  checked={selectedColumns.includes(col)}
-                  onCheckedChange={(checked) => {
-                    if (checked) setSelectedColumns([...selectedColumns, col]);
-                    else setSelectedColumns(selectedColumns.filter((c) => c !== col));
-                  }}
-                />
-                <label htmlFor={`col-${col}`} className="text-sm font-normal cursor-pointer flex-1">
-                  {PLAYER_FIELDS[col]?.zh || col} ({PLAYER_FIELDS[col]?.en || col})
-                </label>
+                {allColumns.map((col) => (
+                  <div key={col} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`col-${col}`}
+                      checked={selectedColumns.includes(col)}
+                      onCheckedChange={(checked) => {
+                        if (checked) setSelectedColumns([...selectedColumns, col]);
+                        else setSelectedColumns(selectedColumns.filter((c) => c !== col));
+                      }}
+                    />
+                    <label htmlFor={`col-${col}`} className="text-sm font-normal cursor-pointer flex-1">
+                      {PLAYER_FIELDS[col]?.zh || col} ({PLAYER_FIELDS[col]?.en || col})
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </SheetContent>
-      </Sheet>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
+      <FilterBar
+        availableTeams={availableTeams}
+        filterState={filterState}
+        onFilterChange={setFilterState}
+      />
+
+      <div className="mt-4">
+        <DataTable
+          data={filteredData}
+          columns={selectedColumns.length > 0 ? selectedColumns : DEFAULT_COLUMNS}
+          unit={filterState.unit}
+          searchKey="player_name"
+          getRowId={(row) => String(row.player_id)}
+        />
+      </div>
     </div>
+  </div>
+);
