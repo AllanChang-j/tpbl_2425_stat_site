@@ -7,7 +7,7 @@ import { DataTable } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { loadPlayersData, getUniqueTeams, Player } from "@/lib/data-service";
+import { loadPlayersData, getUniqueTeams, Player, CompetitionType } from "@/lib/data-service";
 import { DisplayUnit, getFieldKey, NUMERIC_FIELDS, PLAYER_FIELDS, UNIT_INDEPENDENT_FIELDS } from "@/lib/constants";
 
 // Get all available columns from the first data row
@@ -125,6 +125,7 @@ const DEFAULT_COLUMNS = [
 
 export default function PlayersPage() {
   const [data, setData] = useState<Player[]>([]);
+  const [competition, setCompetition] = useState<CompetitionType>("regular");
   const [loading, setLoading] = useState(true);
   const [selectedColumns, setSelectedColumns] = useState<string[]>(DEFAULT_COLUMNS);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
@@ -140,7 +141,7 @@ export default function PlayersPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const players = await loadPlayersData();
+        const players = await loadPlayersData(competition);
         console.log("Loaded players:", players.length);
         if (players.length > 0) {
           console.log("First player keys:", Object.keys(players[0]));
@@ -153,7 +154,7 @@ export default function PlayersPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [competition]);
 
   const availableTeams = useMemo(() => getUniqueTeams(data), [data]);
   const allColumns = useMemo(() => getAllColumns(data), [data]);
@@ -224,6 +225,17 @@ export default function PlayersPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-slate-900">球員數據</h1>
+          {/* Toggle */}
+          <select
+            value={competition}
+            onChange={(e) => setCompetition(e.target.value as CompetitionType)}
+            className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm"
+          >
+            <option value="regular">例行賽</option>
+            <option value="playin">Play-in</option>
+            <option value="playoff">Playoff</option>
+          </select>
+        </div>
           <Sheet open={showColumnSelector} onOpenChange={setShowColumnSelector}>
             <SheetTrigger asChild>
               <Button variant="outline">選擇欄位 ({selectedColumns.length})</Button>
