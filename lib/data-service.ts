@@ -1,6 +1,7 @@
 import Papa from "papaparse";
 import { z } from "zod";
 
+export type CompetitionType = "regular" | "playin" | "playoff";
 /** helper：所有數值欄位統一用這個（可吃 string/number/空值） */
 const num = () => z.coerce.number().catch(0); // 空或不合法 -> 0
 const numOpt = () => z.coerce.number().optional(); // 可為 undefined（用在你想保留缺值時）
@@ -230,41 +231,30 @@ export async function parseCSV<T>(filePath: string, schema: z.ZodSchema<T>): Pro
 }
 
 // ---------------- Loaders ----------------
-export async function loadPlayersData(): Promise<Player[]> {
-  // 如果你現在 players advanced 已經內含 rapm，就可以只讀一個檔：
-  // return parseCSV("/data/players_TPBL_24-25_advanced.csv", PlayerSchema);
+export async function loadPlayersData(type: CompetitionType = "regular"): Promise<Player[]> {
+  const fileMap: Record<CompetitionType, string> = {
+    regular: "/data/players_TPBL_24-25_advanced_regular.csv",
+    playin: "/data/players_TPBL_24-25_advanced_playin.csv",
+    playoff: "/data/players_TPBL_24-25_advanced_playoff.csv",
+  };
 
-  // 你仍想保留「讀獨立 RAPM 並 merge」也可以：
-  const [players, rapm] = await Promise.all([
-    parseCSV("/data/players_TPBL_24-25_advanced.csv", PlayerSchema),
-    parseCSV("/data/rapm_TPBL_24-25.csv", RapmSchema),
-  ]);
 
-  const rapmMap = new Map<string, Rapm>();
-  rapm.forEach((r) => {
-    const id = String(r.player_id ?? "").trim();
-    if (id) rapmMap.set(id, r);
-  });
+  return parseCSV(fileMap[type], PlayerSchema);
 
-  const merged = players.map((p) => {
-    const pid = String(p.player_id ?? "").trim();
-    const r = pid ? rapmMap.get(pid) : undefined;
-    if (!r) return p;
 
-    return {
-      ...p,
-      rapm_per100: r.rapm_per100,
-      orapm_per100: r.orapm_per100,
-      drapm_per100: r.drapm_per100,
-    };
-  });
-
-  return merged;
-}
-
-export async function loadLineupsData(size?: 2 | 3 | 4 | 5): Promise<Lineup[]> {
+export async function loadLineupsData(
+  size?: 2 | 3 | 4 | 5,
+  type: CompetitionType = "regular"
+): Promise<Lineup[]> {
   const sizeStr = size?.toString() || "5";
-  return parseCSV(`/data/lineups_TPBL_24-25_size${sizeStr}.csv`, LineupSchema);
+
+  const fileMap: Record<CompetitionType, string> = {
+    regular: `/data/lineups_TPBL_24-25_size${sizeStr}_regular.csv`,
+    playin: `/data/lineups_TPBL_24-25_size${sizeStr}_playin.csv`,
+    playoff: `/data/lineups_TPBL_24-25_size${sizeStr}_playoff.csv`,
+  };
+
+  return parseCSV(fileMap[type], LineupSchema);
 }
 
 export function getUniqueTeams(data: (Player | Lineup)[]): string[] {
