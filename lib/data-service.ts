@@ -231,16 +231,16 @@ export async function parseCSV<T>(filePath: string, schema: z.ZodSchema<T>): Pro
 }
 
 // ---------------- Loaders ----------------
+
 export async function loadPlayersData(type: CompetitionType = "regular"): Promise<Player[]> {
   const fileMap: Record<CompetitionType, string> = {
-    regular: "/data/players_TPBL_24-25_advanced_regular.csv",
-    playin: "/data/players_TPBL_24-25_advanced_playin.csv",
-    playoff: "/data/players_TPBL_24-25_advanced_playoff.csv",
+    regular: "/data/players_TPBL_24-25_advanced.csv",
+    playin: "/data/players_TPBL_24-25_play-in_advanced_with_rapm.csv",
+    playoff: "/data/players_TPBL_24-25_playoffs_advanced_with_rapm.csv",
   };
 
-
   return parseCSV(fileMap[type], PlayerSchema);
-
+}
 
 export async function loadLineupsData(
   size?: 2 | 3 | 4 | 5,
@@ -249,9 +249,9 @@ export async function loadLineupsData(
   const sizeStr = size?.toString() || "5";
 
   const fileMap: Record<CompetitionType, string> = {
-    regular: `/data/lineups_TPBL_24-25_size${sizeStr}_regular.csv`,
-    playin: `/data/lineups_TPBL_24-25_size${sizeStr}_playin.csv`,
-    playoff: `/data/lineups_TPBL_24-25_size${sizeStr}_playoff.csv`,
+    regular: `/data/lineups_TPBL_24-25_size${sizeStr}.csv`,
+    playin: `/data/lineups_TPBL_play-in_24-25_size${sizeStr}.csv`,
+    playoff: `/data/lineups_TPBL_playoff_24-25_size${sizeStr}.csv`,
   };
 
   return parseCSV(fileMap[type], LineupSchema);
