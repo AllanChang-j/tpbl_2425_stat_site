@@ -246,7 +246,7 @@ export async function loadLineupsData(
   size?: 2 | 3 | 4 | 5,
   type: CompetitionType = "regular"
 ): Promise<Lineup[]> {
-  const sizeStr = size?.toString() || "5";
+  const sizeStr = (size ?? 5).toString();
 
   const fileMap: Record<CompetitionType, string> = {
     regular: `/data/lineups_TPBL_24-25_size${sizeStr}.csv`,
