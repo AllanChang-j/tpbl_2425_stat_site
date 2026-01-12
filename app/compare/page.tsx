@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { loadPlayersData, loadLineupsData, Player, Lineup, CompetitionType, Season, AVAILABLE_SEASONS, DEFAULT_SEASON } from "@/lib/data-service";
-import { DisplayUnit, getDisplayValue, PLAYER_FIELDS, LINEUP_FIELDS, DISPLAY_UNITS } from "@/lib/constants";
+import { DisplayUnit, getDisplayValue, PLAYER_FIELDS, LINEUP_FIELDS, DISPLAY_UNITS, isPercentageField, formatAsPercentage } from "@/lib/constants";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } from "recharts";
 
 type CompareItem = Player | Lineup;
@@ -389,7 +389,9 @@ export default function ComparePage() {
                                   </span>
                                   <span className="tabular-nums font-medium">
                                     {typeof value === "number"
-                                      ? value.toFixed(2)
+                                      ? isPercentageField(field)
+                                        ? formatAsPercentage(value)
+                                        : value.toFixed(2)
                                       : value || "-"}
                                   </span>
                                 </div>
@@ -500,7 +502,9 @@ export default function ComparePage() {
                           <div key={field} className="flex justify-between items-center p-2 bg-gray-50 rounded">
                             <span className="text-sm">{fieldMappings[field]?.zh}</span>
                             <span className={`tabular-nums font-medium ${color}`}>
-                              {isPositive ? "+" : ""}{value.toFixed(2)}
+                              {isPercentageField(field)
+                                ? `${isPositive ? "+" : ""}${formatAsPercentage(value)}`
+                                : `${isPositive ? "+" : ""}${value.toFixed(2)}`}
                             </span>
                           </div>
                         );

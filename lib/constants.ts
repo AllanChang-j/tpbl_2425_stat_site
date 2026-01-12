@@ -161,6 +161,24 @@ export const UNIT_INDEPENDENT_FIELDS = new Set([
 ]);
 
 // Extract base field name by removing unit suffixes
+// Check if a field should be displayed as percentage
+export function isPercentageField(fieldName: string): boolean {
+  const lowerField = fieldName.toLowerCase();
+  return (
+    lowerField.includes("rate") ||
+    lowerField.includes("_pct") ||
+    lowerField.includes("%") ||
+    lowerField === "efg" ||
+    lowerField === "ts" ||
+    lowerField === "ast_ratio" // AST_ratio is also a percentage
+  );
+}
+
+// Format a number as percentage (multiply by 100, round to 1 decimal, add %)
+export function formatAsPercentage(value: number): string {
+  return `${(value * 100).toFixed(1)}%`;
+}
+
 export function getBaseFieldName(fieldName: string): string {
   // 特例：RAPM 這三個就是「固定 per100」的欄位，不要去掉 suffix
   if (fieldName === "rapm_per100" || fieldName === "orapm_per100" || fieldName === "drapm_per100") {

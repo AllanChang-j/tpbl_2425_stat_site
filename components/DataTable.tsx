@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DisplayUnit, getDisplayValue, PLAYER_FIELDS, LINEUP_FIELDS, FieldMapping, getBaseFieldName, UNIT_INDEPENDENT_FIELDS } from "@/lib/constants";
+import { DisplayUnit, getDisplayValue, PLAYER_FIELDS, LINEUP_FIELDS, FieldMapping, getBaseFieldName, UNIT_INDEPENDENT_FIELDS, isPercentageField, formatAsPercentage } from "@/lib/constants";
 import { DataDictionary } from "./DataDictionary";
 
 interface DataTableProps<T> {
@@ -160,10 +160,12 @@ export function DataTable<T extends Record<string, any>>({
           const value = getDisplayValue(row.original, baseField, unit);
           if (value === null || value === undefined) return "-";
           if (typeof value === "number") {
-            // For percentage fields, show 1 decimal place; for others, show 2
-            const isPercentage = baseField.includes("_pct") || baseField === "eFG" || baseField === "TS" || baseField === "PACE";
-            const decimals = isPercentage ? 1 : 2;
-            return <span className="tabular-nums">{value.toFixed(decimals)}</span>;
+            // Check if this field should be displayed as percentage
+            if (isPercentageField(baseField)) {
+              return <span className="tabular-nums">{formatAsPercentage(value)}</span>;
+            }
+            // For other numeric fields, show 2 decimal places
+            return <span className="tabular-nums">{value.toFixed(2)}</span>;
           }
           return value;
         },
