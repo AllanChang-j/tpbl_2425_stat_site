@@ -242,17 +242,55 @@ export async function parseCSV<T>(filePath: string, schema: z.ZodSchema<T>): Pro
 
 // ---------------- Loaders ----------------
 
-export async function loadPlayersData(
-  type: CompetitionType = "regular",
-  season: Season = DEFAULT_SEASON
-): Promise<Player[]> {
+// Helper function to get file path based on season format
+function getPlayerFilePath(season: Season, type: CompetitionType): string {
+  // 25-26 season uses different path structure (singular: player/)
+  if (season === "25-26") {
+    const fileMap: Record<CompetitionType, string> = {
+      regular: `/data/${season}/${type}/player/25-26_20260112_regular_players_rapm.csv`,
+      playin: `/data/${season}/${type}/player/25-26_20260112_play-in_players_rapm.csv`,
+      playoff: `/data/${season}/${type}/player/25-26_20260112_playoff_players_rapm.csv`,
+    };
+    return fileMap[type];
+  }
+  
+  // Default format for other seasons (24-25, 26-27, 27-28, 28-29, etc.)
+  // Uses plural: players/
   const fileMap: Record<CompetitionType, string> = {
     regular: `/data/${season}/${type}/players/players_TPBL_${season}_advanced.csv`,
     playin: `/data/${season}/${type}/players/players_TPBL_${season}_play-in_advanced_with_rapm.csv`,
     playoff: `/data/${season}/${type}/players/players_TPBL_${season}_playoffs_advanced_with_rapm.csv`,
   };
+  return fileMap[type];
+}
 
-  return parseCSV(fileMap[type], PlayerSchema);
+function getLineupFilePath(season: Season, type: CompetitionType, sizeStr: string): string {
+  // 25-26 season uses different path structure (singular: lineup/)
+  if (season === "25-26") {
+    const fileMap: Record<CompetitionType, string> = {
+      regular: `/data/${season}/${type}/lineup/25-26_20260112_regular_lineups_${sizeStr}.csv`,
+      playin: `/data/${season}/${type}/lineup/25-26_20260112_play-in_lineups_${sizeStr}.csv`,
+      playoff: `/data/${season}/${type}/lineup/25-26_20260112_playoff_lineups_${sizeStr}.csv`,
+    };
+    return fileMap[type];
+  }
+  
+  // Default format for other seasons (24-25, 26-27, 27-28, 28-29, etc.)
+  // Uses plural: lineups/
+  const fileMap: Record<CompetitionType, string> = {
+    regular: `/data/${season}/${type}/lineups/lineups_TPBL_${season}_size${sizeStr}.csv`,
+    playin: `/data/${season}/${type}/lineups/lineups_TPBL_play-in_${season}_size${sizeStr}.csv`,
+    playoff: `/data/${season}/${type}/lineups/lineups_TPBL_playoff_${season}_size${sizeStr}.csv`,
+  };
+  return fileMap[type];
+}
+
+export async function loadPlayersData(
+  type: CompetitionType = "regular",
+  season: Season = DEFAULT_SEASON
+): Promise<Player[]> {
+  const filePath = getPlayerFilePath(season, type);
+  return parseCSV(filePath, PlayerSchema);
 }
 
 export async function loadLineupsData(
@@ -261,14 +299,8 @@ export async function loadLineupsData(
   season: Season = DEFAULT_SEASON
 ): Promise<Lineup[]> {
   const sizeStr = (size ?? 5).toString();
-
-  const fileMap: Record<CompetitionType, string> = {
-    regular: `/data/${season}/${type}/lineups/lineups_TPBL_${season}_size${sizeStr}.csv`,
-    playin: `/data/${season}/${type}/lineups/lineups_TPBL_play-in_${season}_size${sizeStr}.csv`,
-    playoff: `/data/${season}/${type}/lineups/lineups_TPBL_playoff_${season}_size${sizeStr}.csv`,
-  };
-
-  return parseCSV(fileMap[type], LineupSchema);
+  const filePath = getLineupFilePath(season, type, sizeStr);
+  return parseCSV(filePath, LineupSchema);
 }
 
 export function getUniqueTeams(data: (Player | Lineup)[]): string[] {
