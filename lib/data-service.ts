@@ -242,16 +242,63 @@ export async function parseCSV<T>(filePath: string, schema: z.ZodSchema<T>): Pro
 
 // ---------------- Loaders ----------------
 
+// Helper function to format date as YYYYMMDD
+function formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}${month}${day}`;
+}
+
+// Helper function to find the latest file by trying multiple dates
+// Tries today, yesterday, and up to 7 days ago
+async function findLatestFile(
+  season: Season,
+  type: CompetitionType,
+  filePattern: (dateStr: string) => string
+): Promise<string | null> {
+  const today = new Date();
+  // Try up to 7 days back
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const dateStr = formatDate(date);
+    const filePath = filePattern(dateStr);
+    
+    // Try to fetch the file
+    try {
+      const response = await fetch(filePath, { method: "HEAD" });
+      if (response.ok) {
+        return filePath;
+      }
+    } catch (error) {
+      // Continue to next date
+    }
+  }
+  return null;
+}
+
 // Helper function to get file path based on season format
-function getPlayerFilePath(season: Season, type: CompetitionType): string {
-  // 25-26 season uses different path structure (singular: player/)
+async function getPlayerFilePath(season: Season, type: CompetitionType): Promise<string> {
+  // 25-26 season uses different path structure (singular: player/) with date in filename
   if (season === "25-26") {
-    const fileMap: Record<CompetitionType, string> = {
-      regular: `/data/${season}/${type}/player/25-26_20260112_regular_players_rapm.csv`,
-      playin: `/data/${season}/${type}/player/25-26_20260112_play-in_players_rapm.csv`,
-      playoff: `/data/${season}/${type}/player/25-26_20260112_playoff_players_rapm.csv`,
+    const filePattern = (dateStr: string): string => {
+      const fileMap: Record<CompetitionType, string> = {
+        regular: `/data/${season}/${type}/player/${season}_${dateStr}_regular_players_rapm.csv`,
+        playin: `/data/${season}/${type}/player/${season}_${dateStr}_play-in_players_rapm.csv`,
+        playoff: `/data/${season}/${type}/player/${season}_${dateStr}_playoff_players_rapm.csv`,
+      };
+      return fileMap[type];
     };
-    return fileMap[type];
+    
+    // Try to find the latest file
+    const latestFile = await findLatestFile(season, type, filePattern);
+    if (latestFile) {
+      return latestFile;
+    }
+    
+    // Fallback to a default date pattern if no file found
+    return filePattern(formatDate(new Date()));
   }
   
   // Default format for other seasons (24-25, 26-27, 27-28, 28-29, etc.)
@@ -264,15 +311,26 @@ function getPlayerFilePath(season: Season, type: CompetitionType): string {
   return fileMap[type];
 }
 
-function getLineupFilePath(season: Season, type: CompetitionType, sizeStr: string): string {
-  // 25-26 season uses different path structure (singular: lineup/)
+async function getLineupFilePath(season: Season, type: CompetitionType, sizeStr: string): Promise<string> {
+  // 25-26 season uses different path structure (singular: lineup/) with date in filename
   if (season === "25-26") {
-    const fileMap: Record<CompetitionType, string> = {
-      regular: `/data/${season}/${type}/lineup/25-26_20260112_regular_lineups_${sizeStr}.csv`,
-      playin: `/data/${season}/${type}/lineup/25-26_20260112_play-in_lineups_${sizeStr}.csv`,
-      playoff: `/data/${season}/${type}/lineup/25-26_20260112_playoff_lineups_${sizeStr}.csv`,
+    const filePattern = (dateStr: string): string => {
+      const fileMap: Record<CompetitionType, string> = {
+        regular: `/data/${season}/${type}/lineup/${season}_${dateStr}_regular_lineups_${sizeStr}.csv`,
+        playin: `/data/${season}/${type}/lineup/${season}_${dateStr}_play-in_lineups_${sizeStr}.csv`,
+        playoff: `/data/${season}/${type}/lineup/${season}_${dateStr}_playoff_lineups_${sizeStr}.csv`,
+      };
+      return fileMap[type];
     };
-    return fileMap[type];
+    
+    // Try to find the latest file
+    const latestFile = await findLatestFile(season, type, filePattern);
+    if (latestFile) {
+      return latestFile;
+    }
+    
+    // Fallback to a default date pattern if no file found
+    return filePattern(formatDate(new Date()));
   }
   
   // Default format for other seasons (24-25, 26-27, 27-28, 28-29, etc.)
@@ -289,7 +347,7 @@ export async function loadPlayersData(
   type: CompetitionType = "regular",
   season: Season = DEFAULT_SEASON
 ): Promise<Player[]> {
-  const filePath = getPlayerFilePath(season, type);
+  const filePath = await getPlayerFilePath(season, type);
   return parseCSV(filePath, PlayerSchema);
 }
 
@@ -299,7 +357,7 @@ export async function loadLineupsData(
   season: Season = DEFAULT_SEASON
 ): Promise<Lineup[]> {
   const sizeStr = (size ?? 5).toString();
-  const filePath = getLineupFilePath(season, type, sizeStr);
+  const filePath = await getLineupFilePath(season, type, sizeStr);
   return parseCSV(filePath, LineupSchema);
 }
 
