@@ -174,8 +174,32 @@ export function isPercentageField(fieldName: string): boolean {
   );
 }
 
-// Format a number as percentage (multiply by 100, round to 1 decimal, add %)
-export function formatAsPercentage(value: number): string {
+// Fields that are already in percentage format (0-100), don't multiply by 100
+const ALREADY_PERCENTAGE_FIELDS = new Set([
+  "ast_ratio",      // AST Ratio is already 0-100 format
+  "usg_pct",        // USG% is already 0-100 format
+  "orb_pct",        // ORB% is already 0-100 format
+  "drb_pct",        // DRB% is already 0-100 format
+  "trb_pct",        // TRB% is already 0-100 format
+  "stl_pct",        // STL% is already 0-100 format
+  "blk_pct",        // BLK% is already 0-100 format
+  "fg2_pct",        // 2P% is already 0-100 format
+  "fg3_pct",        // 3P% is already 0-100 format
+  "ft_pct",         // FT% is already 0-100 format
+  "tov_pct",        // TOV% is already 0-100 format
+]);
+
+// Format a number as percentage
+// Some fields are already in percentage format (0-100), others are decimal (0-1)
+export function formatAsPercentage(value: number, fieldName: string): string {
+  const lowerField = fieldName.toLowerCase();
+  
+  // If field is already in percentage format (0-100), just add % sign
+  if (ALREADY_PERCENTAGE_FIELDS.has(lowerField)) {
+    return `${value.toFixed(1)}%`;
+  }
+  
+  // Otherwise, multiply by 100 to convert from decimal (0-1) to percentage
   return `${(value * 100).toFixed(1)}%`;
 }
 

@@ -390,7 +390,7 @@ export default function ComparePage() {
                                   <span className="tabular-nums font-medium">
                                     {typeof value === "number"
                                       ? isPercentageField(field)
-                                        ? formatAsPercentage(value)
+                                        ? formatAsPercentage(value, field)
                                         : value.toFixed(2)
                                       : value || "-"}
                                   </span>
@@ -503,7 +503,7 @@ export default function ComparePage() {
                             <span className="text-sm">{fieldMappings[field]?.zh}</span>
                             <span className={`tabular-nums font-medium ${color}`}>
                               {isPercentageField(field)
-                                ? `${isPositive ? "+" : ""}${formatAsPercentage(value)}`
+                                ? `${isPositive ? "+" : ""}${formatAsPercentage(value, field)}`
                                 : `${isPositive ? "+" : ""}${value.toFixed(2)}`}
                             </span>
                           </div>

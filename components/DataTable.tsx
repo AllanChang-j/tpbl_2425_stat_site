@@ -162,7 +162,7 @@ export function DataTable<T extends Record<string, any>>({
           if (typeof value === "number") {
             // Check if this field should be displayed as percentage
             if (isPercentageField(baseField)) {
-              return <span className="tabular-nums">{formatAsPercentage(value)}</span>;
+              return <span className="tabular-nums">{formatAsPercentage(value, baseField)}</span>;
             }
             // For other numeric fields, show 2 decimal places
             return <span className="tabular-nums">{value.toFixed(2)}</span>;
