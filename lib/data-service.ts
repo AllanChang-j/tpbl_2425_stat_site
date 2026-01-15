@@ -251,15 +251,17 @@ function formatDate(date: Date): string {
 }
 
 // Helper function to find the latest file by trying multiple dates
-// Tries today, yesterday, and up to 7 days ago
+// Tries today, yesterday, and up to 30 days ago to find the most recent file
 async function findLatestFile(
   season: Season,
   type: CompetitionType,
   filePattern: (dateStr: string) => string
 ): Promise<string | null> {
   const today = new Date();
-  // Try up to 7 days back
-  for (let i = 0; i < 7; i++) {
+  const foundFiles: Array<{ date: Date; path: string }> = [];
+  
+  // Try up to 30 days back to find all existing files
+  for (let i = 0; i < 30; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
     const dateStr = formatDate(date);
@@ -269,12 +271,21 @@ async function findLatestFile(
     try {
       const response = await fetch(filePath, { method: "HEAD" });
       if (response.ok) {
-        return filePath;
+        foundFiles.push({ date, path: filePath });
       }
     } catch (error) {
       // Continue to next date
     }
   }
+  
+  // If we found any files, return the one with the latest date
+  if (foundFiles.length > 0) {
+    // Sort by date (most recent first)
+    foundFiles.sort((a, b) => b.date.getTime() - a.date.getTime());
+    console.log(`Found ${foundFiles.length} file(s), using latest: ${foundFiles[0].path}`);
+    return foundFiles[0].path;
+  }
+  
   return null;
 }
 
