@@ -313,11 +313,11 @@ async function getPlayerFilePath(season: Season, type: CompetitionType): Promise
   }
   
   // Default format for other seasons (24-25, 26-27, 27-28, 28-29, etc.)
-  // Uses plural: players/
+  // Uses singular: player/
   const fileMap: Record<CompetitionType, string> = {
-    regular: `/data/${season}/${type}/players/players_TPBL_${season}_advanced.csv`,
-    playin: `/data/${season}/${type}/players/players_TPBL_${season}_play-in_advanced_with_rapm.csv`,
-    playoff: `/data/${season}/${type}/players/players_TPBL_${season}_playoffs_advanced_with_rapm.csv`,
+    regular: `/data/${season}/${type}/player/players_TPBL_${season}_advanced.csv`,
+    playin: `/data/${season}/${type}/player/players_TPBL_${season}_play-in_advanced_with_rapm.csv`,
+    playoff: `/data/${season}/${type}/player/players_TPBL_${season}_playoffs_advanced_with_rapm.csv`,
   };
   return fileMap[type];
 }
@@ -345,11 +345,11 @@ async function getLineupFilePath(season: Season, type: CompetitionType, sizeStr:
   }
   
   // Default format for other seasons (24-25, 26-27, 27-28, 28-29, etc.)
-  // Uses plural: lineups/
+  // Uses singular: lineup/
   const fileMap: Record<CompetitionType, string> = {
-    regular: `/data/${season}/${type}/lineups/lineups_TPBL_${season}_size${sizeStr}.csv`,
-    playin: `/data/${season}/${type}/lineups/lineups_TPBL_play-in_${season}_size${sizeStr}.csv`,
-    playoff: `/data/${season}/${type}/lineups/lineups_TPBL_playoff_${season}_size${sizeStr}.csv`,
+    regular: `/data/${season}/${type}/lineup/lineups_TPBL_${season}_size${sizeStr}.csv`,
+    playin: `/data/${season}/${type}/lineup/lineups_TPBL_play-in_${season}_size${sizeStr}.csv`,
+    playoff: `/data/${season}/${type}/lineup/lineups_TPBL_playoff_${season}_size${sizeStr}.csv`,
   };
   return fileMap[type];
 }
