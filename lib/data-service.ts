@@ -291,8 +291,8 @@ async function findLatestFile(
 
 // Helper function to get file path based on season format
 async function getPlayerFilePath(season: Season, type: CompetitionType): Promise<string> {
-  // 25-26 season uses different path structure (singular: player/) with date in filename
-  if (season === "25-26") {
+  // 24-25 and 25-26 seasons use date-based file naming
+  if (season === "24-25" || season === "25-26") {
     const filePattern = (dateStr: string): string => {
       const fileMap: Record<CompetitionType, string> = {
         regular: `/data/${season}/${type}/player/${season}_${dateStr}_regular_players_rapm.csv`,
@@ -312,7 +312,7 @@ async function getPlayerFilePath(season: Season, type: CompetitionType): Promise
     return filePattern(formatDate(new Date()));
   }
   
-  // Default format for other seasons (24-25, 26-27, 27-28, 28-29, etc.)
+  // Default format for other seasons (26-27, 27-28, 28-29, etc.)
   // Uses singular: player/
   const fileMap: Record<CompetitionType, string> = {
     regular: `/data/${season}/${type}/player/players_TPBL_${season}_advanced.csv`,
@@ -323,8 +323,8 @@ async function getPlayerFilePath(season: Season, type: CompetitionType): Promise
 }
 
 async function getLineupFilePath(season: Season, type: CompetitionType, sizeStr: string): Promise<string> {
-  // 25-26 season uses different path structure (singular: lineup/) with date in filename
-  if (season === "25-26") {
+  // 24-25 and 25-26 seasons use date-based file naming
+  if (season === "24-25" || season === "25-26") {
     const filePattern = (dateStr: string): string => {
       const fileMap: Record<CompetitionType, string> = {
         regular: `/data/${season}/${type}/lineup/${season}_${dateStr}_regular_lineups_${sizeStr}.csv`,
@@ -344,7 +344,7 @@ async function getLineupFilePath(season: Season, type: CompetitionType, sizeStr:
     return filePattern(formatDate(new Date()));
   }
   
-  // Default format for other seasons (24-25, 26-27, 27-28, 28-29, etc.)
+  // Default format for other seasons (26-27, 27-28, 28-29, etc.)
   // Uses singular: lineup/
   const fileMap: Record<CompetitionType, string> = {
     regular: `/data/${season}/${type}/lineup/lineups_TPBL_${season}_size${sizeStr}.csv`,
