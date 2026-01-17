@@ -1,0 +1,384 @@
+// 球員欄位定義模板 - 請填寫基礎欄位的 definition
+// 注意：_per_game, _per100, _per36 等變體欄位會自動使用基礎欄位的 definition
+
+// ==================== 基本資訊 ====================
+player_id: { 
+  zh: "球員ID", 
+  en: "Player ID",
+  definition: ""
+},
+
+player_name: { 
+  zh: "球員", 
+  en: "Player",
+  definition: "球員名稱"
+},
+
+team_name: { 
+  zh: "球隊", 
+  en: "Team",
+  definition: "所屬球隊"
+},
+
+games_used: { 
+  zh: "出賽場次", 
+  en: "Games",
+  definition: ""
+},
+
+stint_count: { 
+  zh: "Stints數", 
+  en: "Stints",
+  definition: "本賽季累積輪換次數計算RAPM用"
+},
+
+possessions: { 
+  zh: "回合數", 
+  en: "Possessions",
+  definition: ""
+},
+
+sec_played: { 
+  zh: "上場秒數", 
+  en: "Seconds Played",
+  definition: ""
+},
+
+min_played: { 
+  zh: "上場分鐘", 
+  en: "Minutes Played",
+  definition: ""
+},
+
+min_played_str: { 
+  zh: "上場時間", 
+  en: "Minutes (str)",
+  definition: ""
+},
+
+sec_per_game: { 
+  zh: "每場秒數", 
+  en: "Seconds / Game",
+  definition: ""
+},
+
+min_per_game: { 
+  zh: "每場分鐘", 
+  en: "Minutes / Game",
+  definition: ""
+},
+
+min_per_game_str: { 
+  zh: "每場時間", 
+  en: "Minutes / Game (str)",
+  definition: ""
+},
+
+// ==================== 基礎統計欄位 ====================
+PTS: { 
+  zh: "得分", 
+  en: "Points",
+  definition: ""
+},
+
+FGA: { 
+  zh: "出手", 
+  en: "FGA",
+  definition: "出手嘗試"
+},
+
+FGM: { 
+  zh: "命中", 
+  en: "FGM",
+  definition: "出手命中"
+},
+
+"2PA": { 
+  zh: "兩分出手", 
+  en: "2PA",
+  definition: "兩分球出手嘗試"
+},
+
+"2PM": { 
+  zh: "兩分命中", 
+  en: "2PM",
+  definition: "兩分球出手命中"
+},
+
+"3PA": { 
+  zh: "三分出手", 
+  en: "3PA",
+  definition: "三分球出手嘗試"
+},
+
+"3PM": { 
+  zh: "三分命中", 
+  en: "3PM",
+  definition: "兩分球出手命中"
+},
+
+FTA: { 
+  zh: "罰球出手", 
+  en: "FTA",
+  definition: "罰球出手嘗試"
+},
+
+FTM: { 
+  zh: "罰球命中", 
+  en: "FTM",
+  definition: "罰球出手命中"
+},
+
+ORB: { 
+  zh: "進攻籃板", 
+  en: "ORB",
+  definition: ""
+},
+
+DRB: { 
+  zh: "防守籃板", 
+  en: "DRB",
+  definition: ""
+},
+
+AST: { 
+  zh: "助攻", 
+  en: "AST",
+  definition: ""
+},
+
+STL: { 
+  zh: "抄截", 
+  en: "STL",
+  definition: ""
+},
+
+BLK: { 
+  zh: "阻攻", 
+  en: "BLK",
+  definition: ""
+},
+
+TOV: { 
+  zh: "失誤", 
+  en: "TOV",
+  definition: ""
+},
+
+Fouls: { 
+  zh: "犯規", 
+  en: "Fouls",
+  definition: ""
+},
+
+FT_allowed: { 
+  zh: "被罰球（對手FTM）", 
+  en: "FT Allowed (Opp FTM)",
+  definition: ""
+},
+
+// ==================== RAPM 相關 ====================
+rapm_per100: { 
+  zh: "RAPM", 
+  en: "RAPM ",
+  definition: ""
+},
+
+orapm_per100: { 
+  zh: "進攻RAPM", 
+  en: "O-RAPM ",
+  definition: ""
+},
+
+drapm_per100: { 
+  zh: "防守RAPM", 
+  en: "D-RAPM ",
+  definition: ""
+},
+
+// ==================== 效率相關 ====================
+ORtg: { 
+  zh: "進攻效率", 
+  en: "Offensive Rating",
+  definition: ""
+},
+
+DRtg: { 
+  zh: "防守效率", 
+  en: "Defensive Rating",
+  definition: ""
+},
+
+NetRtg: { 
+  zh: "淨效率", 
+  en: "Net Rating",
+  definition: ""
+},
+
+// ==================== 正負值相關 ====================
+PM_total: { 
+  zh: "總正負值", 
+  en: "Plus/Minus (Total)",
+  definition: ""
+},
+
+// ==================== 節奏 ====================
+PACE: { 
+  zh: "節奏（Pace）", 
+  en: "Pace",
+  definition: ""
+},
+
+// ==================== 命中率相關 ====================
+eFG: { 
+  zh: "有效命中率", 
+  en: "eFG%",
+  definition: ""
+},
+
+TS: { 
+  zh: "真實命中率", 
+  en: "TS%",
+  definition: ""
+},
+
+FG2_pct: { 
+  zh: "兩分命中率", 
+  en: "2P%",
+  definition: ""
+},
+
+FG3_pct: { 
+  zh: "三分命中率", 
+  en: "3P%",
+  definition: ""
+},
+
+FT_pct: { 
+  zh: "罰球命中率", 
+  en: "FT%",
+  definition: ""
+},
+
+TOV_pct: { 
+  zh: "失誤率", 
+  en: "TOV%",
+  definition: ""
+},
+
+// ==================== 比率相關 ====================
+AST_ratio: { 
+  zh: "助攻比率（AST Ratio）", 
+  en: "AST Ratio",
+  definition: ""
+},
+
+USG_pct: { 
+  zh: "使用率", 
+  en: "USG%",
+  definition: ""
+},
+
+ORB_pct: { 
+  zh: "進攻籃板率", 
+  en: "ORB%",
+  definition: ""
+},
+
+DRB_pct: { 
+  zh: "防守籃板率", 
+  en: "DRB%",
+  definition: ""
+},
+
+TRB_pct: { 
+  zh: "總籃板率", 
+  en: "TRB%",
+  definition: ""
+},
+
+STL_pct: { 
+  zh: "抄截率", 
+  en: "STL%",
+  definition: ""
+},
+
+BLK_pct: { 
+  zh: "阻攻率", 
+  en: "BLK%",
+  definition: ""
+},
+
+// ==================== 其他統計 ====================
+STL_per100poss: { 
+  zh: "抄截（每100回合）", 
+  en: "STL / 100 poss (alt)",
+  definition: ""
+},
+
+BLK_per100poss: { 
+  zh: "阻攻（每100回合）", 
+  en: "BLK / 100 poss (alt)",
+  definition: ""
+},
+
+Foul_per_poss: { 
+  zh: "每回合犯規", 
+  en: "Fouls / Poss",
+  definition: ""
+},
+
+FT_allowed_rate_per100: { 
+  zh: "被罰球率（每100回合）", 
+  en: "FT Allowed Rate / 100",
+  definition: ""
+},
+
+FT_rate: { 
+  zh: "罰球率（FT Rate）", 
+  en: "FT Rate",
+  definition: ""
+},
+
+// ==================== 陣容專屬欄位 ====================
+lineup_size: { 
+  zh: "陣容人數", 
+  en: "Lineup Size",
+  definition: ""
+},
+
+lineup_player_ids: { 
+  zh: "球員ID列表", 
+  en: "Player IDs",
+  definition: ""
+},
+
+lineup_player_names: { 
+  zh: "球員名單", 
+  en: "Players",
+  definition: ""
+},
+
+PTS_allowed: { 
+  zh: "失分", 
+  en: "Points Allowed",
+  definition: ""
+},
+
+ORB_allowed: { 
+  zh: "讓對手進攻籃板", 
+  en: "Opp ORB",
+  definition: ""
+},
+
+DRB_allowed: { 
+  zh: "讓對手防守籃板", 
+  en: "Opp DRB",
+  definition: ""
+},
+
+MIN_total: { 
+  zh: "總分鐘（陣容）", 
+  en: "Minutes (Total)",
+  definition: ""
+},

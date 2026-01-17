@@ -13,6 +13,8 @@ export const PLAYER_FIELDS: Record<string, FieldMapping> = {
   games_used: { zh: "出賽場次", en: "Games" },
   stint_count: { zh: "Stints數", en: "Stints" },
   possessions: { zh: "回合數", en: "Possessions" },
+  possessions_per_game: { zh: "回合數（每場）", en: "Possessions / G" },
+  possessions_per36: { zh: "回合數（每36分鐘）", en: "Possessions / 36" },
   sec_played: { zh: "上場秒數", en: "Seconds Played" },
   min_played: { zh: "上場分鐘", en: "Minutes Played" },
   min_played_str: { zh: "上場時間", en: "Minutes (str)" },
@@ -209,6 +211,9 @@ export function getBaseFieldName(fieldName: string): string {
     return fieldName;
   }
 
+  // 特例：poss_per_game 對應到 possessions
+  if (fieldName === "poss_per_game") return "possessions";
+
   if (fieldName.endsWith("_per_game")) return fieldName.replace("_per_game", "");
   if (fieldName.endsWith("_per36")) return fieldName.replace("_per36", "");
   if (fieldName.endsWith("_per100")) return fieldName.replace("_per100", "");
@@ -220,6 +225,13 @@ export function getBaseFieldName(fieldName: string): string {
 export function getFieldKey(baseField: string, unit: DisplayUnit): string {
   if (unit === "raw") {
     return baseField;
+  }
+  
+  // Special case: possessions uses poss_per_game in data
+  if (baseField === "possessions") {
+    if (unit === "per_game") return "poss_per_game";
+    if (unit === "per36") return "possessions_per36"; // Will be calculated if not in data
+    if (unit === "per100") return "possessions_per100"; // Will be calculated if not in data
   }
   
   const suffix = unit === "per_game" ? "_per_game" : unit === "per36" ? "_per36" : "_per100";
@@ -254,6 +266,20 @@ export function getDisplayValue(
   // Try the unit-specific field first
   if (data[targetFieldKey] !== undefined && data[targetFieldKey] !== null && data[targetFieldKey] !== "") {
     return data[targetFieldKey];
+  }
+  
+  // Special calculation for possessions_per36 if not in data
+  if (baseField === "possessions" && unit === "per36" && data.possessions && data.min_played) {
+    const possPer36 = (data.possessions / data.min_played) * 36;
+    if (!isNaN(possPer36) && isFinite(possPer36)) {
+      return possPer36;
+    }
+  }
+  
+  // Special calculation for possessions_per100 if not in data (use PACE if available)
+  if (baseField === "possessions" && unit === "per100" && data.PACE) {
+    // PACE is already possessions per 100, so we can use it directly
+    return data.PACE;
   }
   
   // Fallback to raw (cumulative) value

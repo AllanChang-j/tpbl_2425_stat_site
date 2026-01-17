@@ -22,6 +22,7 @@ const PlayerSchema = z
     games_used: num(),
     stint_count: num(),
     possessions: num(),
+    poss_per_game: numOpt(), // Note: data uses poss_per_game, not possessions_per_game
 
     sec_played: num(),
     min_played: num(),

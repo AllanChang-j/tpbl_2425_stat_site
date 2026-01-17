@@ -75,7 +75,7 @@ export function DataTable<T extends Record<string, any>>({
       "player_name", "team_name", "lineup_player_names", 
       "player_id", "lineup_player_ids", "lineup_size",
       "min_played_str", "min_per_game_str",
-      "games_used", "stint_count", "possessions",
+      "games_used", "stint_count",
       "rapm_per100", "orapm_per100", "drapm_per100",
     ]);
     
@@ -328,14 +328,20 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Dictionary Modal */}
-      {dictionaryField && (
-        <DataDictionary
-          field={dictionaryField}
-          mapping={fieldMappings[dictionaryField]}
-          open={!!dictionaryField}
-          onOpenChange={(open) => !open && setDictionaryField(null)}
-        />
-      )}
+      {dictionaryField && (() => {
+        // Get base field name for definition lookup (to avoid duplicating definitions for _per_game, _per100, _per36 variants)
+        const baseField = getBaseFieldName(dictionaryField);
+        // Use base field mapping if it exists, otherwise fall back to the field itself
+        const mapping = fieldMappings[baseField] || fieldMappings[dictionaryField];
+        return (
+          <DataDictionary
+            field={dictionaryField}
+            mapping={mapping}
+            open={!!dictionaryField}
+            onOpenChange={(open) => !open && setDictionaryField(null)}
+          />
+        );
+      })()}
     </div>
   );
 }
