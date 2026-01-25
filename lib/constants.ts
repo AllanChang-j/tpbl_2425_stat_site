@@ -196,8 +196,12 @@ const ALREADY_PERCENTAGE_FIELDS = new Set([
 export function formatAsPercentage(value: number, fieldName: string): string {
   const lowerField = fieldName.toLowerCase();
   
-  // If field is already in percentage format (0-100), just add % sign
+  // Some percentage fields come in mixed formats (0-1 or 0-100).
+  // If value is <= 1, treat it as decimal and convert to percent.
   if (ALREADY_PERCENTAGE_FIELDS.has(lowerField)) {
+    if (value <= 1) {
+      return `${(value * 100).toFixed(1)}%`;
+    }
     return `${value.toFixed(1)}%`;
   }
   
