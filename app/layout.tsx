@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   description:
     "TPBL 台灣職籃進階數據分析網站，提供球員 、RAPM、Lineup 與比賽效率指標。",
   metadataBase: new URL("https://tpbl-stat-site.vercel.app"),
+  verification: {
+    google: "google6385ce1e47fa48ad.html",
+  },
 };
 
 export default function RootLayout({
