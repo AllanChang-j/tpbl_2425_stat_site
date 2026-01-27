@@ -16,8 +16,13 @@ const notoSansTC = Noto_Sans_TC({
 });
 
 export const metadata: Metadata = {
-  title: "TPBL Advanced Stats & RAPM Platform",
-  description: "Taiwan Professional Basketball League Advanced Statistics Platform",
+  title: {
+    default: "TPBL 進階數據分析｜球員、RAPM、陣容",
+    template: "%s｜TPBL Stats",
+  },
+  description:
+    "TPBL 台灣職籃進階數據分析網站，提供球員 、RAPM、Lineup 與比賽效率指標。",
+  metadataBase: new URL("https://tpbl-stat-site.vercel.app"),
 };
 
 export default function RootLayout({
@@ -26,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="zh-Hant">
       <body
         className={`${inter.variable} ${notoSansTC.variable} antialiased`}
       >

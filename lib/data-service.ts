@@ -5,8 +5,8 @@ export type CompetitionType = "regular" | "playin" | "playoff";
 export type Season = string; // e.g., "24-25"
 
 // Available seasons - update this when adding new seasons
-export const AVAILABLE_SEASONS: Season[] = ["24-25", "25-26", "26-27", "27-28", "28-29"];
-export const DEFAULT_SEASON: Season = "24-25";
+export const AVAILABLE_SEASONS: Season[] = ["25-26", "24-25", "26-27", "27-28", "28-29"];
+export const DEFAULT_SEASON: Season = "25-26";
 /** helper：所有數值欄位統一用這個（可吃 string/number/空值） */
 const num = () => z.coerce.number().catch(0); // 空或不合法 -> 0
 const numOpt = () => z.coerce.number().optional(); // 可為 undefined（用在你想保留缺值時）
