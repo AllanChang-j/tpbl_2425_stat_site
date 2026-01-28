@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X, Plus } from "lucide-react";
 import { DisplayUnit, DISPLAY_UNITS, NUMERIC_FIELDS, PLAYER_FIELDS } from "@/lib/constants";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export type FilterCondition = {
   field: string;
@@ -32,6 +33,7 @@ interface FilterBarProps {
 }
 
 export function FilterBar({ availableTeams, filterState, onFilterChange }: FilterBarProps) {
+  const { language } = useLanguage();
   const [localState, setLocalState] = useState<FilterState>(filterState);
 
   const updateState = (updates: Partial<FilterState>) => {
@@ -74,7 +76,9 @@ export function FilterBar({ availableTeams, filterState, onFilterChange }: Filte
     <div className="bg-white border-b border-gray-200 p-4 space-y-4">
       {/* Unit Toggle */}
       <div className="flex items-center gap-2">
-        <Label className="text-sm font-medium">顯示單位:</Label>
+        <Label className="text-sm font-medium">
+          {language === "zh" ? "顯示單位:" : "Display Unit:"}
+        </Label>
         <div className="flex gap-2">
           {DISPLAY_UNITS.map((unit) => (
             <Button
@@ -84,7 +88,7 @@ export function FilterBar({ availableTeams, filterState, onFilterChange }: Filte
               onClick={() => updateState({ unit: unit.value })}
               className="h-8"
             >
-              {unit.label.zh}
+              {unit.label[language]}
             </Button>
           ))}
         </div>
@@ -92,7 +96,9 @@ export function FilterBar({ availableTeams, filterState, onFilterChange }: Filte
 
       {/* Team Selector */}
       <div className="flex items-center gap-2 flex-wrap">
-        <Label className="text-sm font-medium">球隊:</Label>
+        <Label className="text-sm font-medium">
+          {language === "zh" ? "球隊:" : "Teams:"}
+        </Label>
         <div className="flex gap-2 flex-wrap">
           {availableTeams.map((team) => (
             <div key={team} className="flex items-center space-x-2">
@@ -116,7 +122,7 @@ export function FilterBar({ availableTeams, filterState, onFilterChange }: Filte
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label className="text-sm font-medium">
-            最少回合數: {localState.minPossessions}
+            {language === "zh" ? "最少回合數" : "Min Possessions"}: {localState.minPossessions}
           </Label>
           <Slider
             value={[localState.minPossessions]}
@@ -128,7 +134,7 @@ export function FilterBar({ availableTeams, filterState, onFilterChange }: Filte
         </div>
         <div className="space-y-2">
           <Label className="text-sm font-medium">
-            最少分鐘: {localState.minMinutes}
+            {language === "zh" ? "最少分鐘" : "Min Minutes"}: {localState.minMinutes}
           </Label>
           <Slider
             value={[localState.minMinutes]}
@@ -140,7 +146,7 @@ export function FilterBar({ availableTeams, filterState, onFilterChange }: Filte
         </div>
         <div className="space-y-2">
           <Label className="text-sm font-medium">
-            最少場次: {localState.minGames}
+            {language === "zh" ? "最少場次" : "Min Games"}: {localState.minGames}
           </Label>
           <Slider
             value={[localState.minGames]}
@@ -155,7 +161,9 @@ export function FilterBar({ availableTeams, filterState, onFilterChange }: Filte
       {/* Custom Conditions */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-sm font-medium">自訂條件 (最多5個):</Label>
+          <Label className="text-sm font-medium">
+            {language === "zh" ? "自訂條件 (最多5個):" : "Custom Filters (max 5):"}
+          </Label>
           <Button
             variant="outline"
             size="sm"
@@ -164,7 +172,7 @@ export function FilterBar({ availableTeams, filterState, onFilterChange }: Filte
             className="h-8"
           >
             <Plus className="h-4 w-4 mr-1" />
-            新增條件
+            {language === "zh" ? "新增條件" : "Add Filter"}
           </Button>
         </div>
         <div className="space-y-2">
@@ -180,7 +188,9 @@ export function FilterBar({ availableTeams, filterState, onFilterChange }: Filte
                 <SelectContent>
                   {NUMERIC_FIELDS.map((field) => (
                     <SelectItem key={field} value={field}>
-                      {PLAYER_FIELDS[field]?.zh || field}
+                      {(language === "zh"
+                        ? PLAYER_FIELDS[field]?.zh
+                        : PLAYER_FIELDS[field]?.en) || field}
                     </SelectItem>
                   ))}
                 </SelectContent>

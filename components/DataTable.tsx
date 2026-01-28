@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { DisplayUnit, getDisplayValue, PLAYER_FIELDS, LINEUP_FIELDS, FieldMapping, getBaseFieldName, UNIT_INDEPENDENT_FIELDS, isPercentageField, formatAsPercentage } from "@/lib/constants";
 import { DataDictionary } from "./DataDictionary";
+import { useLanguage } from "@/components/LanguageProvider";
 
 interface DataTableProps<T> {
   data: T[];
@@ -47,6 +48,7 @@ export function DataTable<T extends Record<string, any>>({
   onSelectionChange,
   getRowId,
 }: DataTableProps<T>) {
+  const { language } = useLanguage();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [dictionaryField, setDictionaryField] = useState<string | null>(null);
@@ -117,7 +119,7 @@ export function DataTable<T extends Record<string, any>>({
     // Add rank column
     cols.push({
       id: "rank",
-      header: "排名",
+      header: language === "zh" ? "排名" : "Rank",
       cell: ({ row, table }) => {
         const sortedData = table.getSortedRowModel().rows;
         const index = sortedData.findIndex((r) => r.id === row.id);
@@ -138,7 +140,7 @@ export function DataTable<T extends Record<string, any>>({
         accessorKey: col,
         header: ({ column }) => (
           <div className="flex items-center gap-1">
-            <span>{fieldMapping.zh}</span>
+            <span>{language === "zh" ? fieldMapping.zh : fieldMapping.en}</span>
             <button
               onClick={() => {
                 column.toggleSorting(column.getIsSorted() === "asc");
@@ -174,7 +176,7 @@ export function DataTable<T extends Record<string, any>>({
     });
 
     return cols;
-  }, [filteredColumns, unit, fieldMappings]);
+  }, [filteredColumns, unit, fieldMappings, language]);
   const validSorting = useMemo(() => {
     const ids = new Set(
       tableColumns.map((c) => c.id).filter(Boolean) as string[]
@@ -223,7 +225,7 @@ export function DataTable<T extends Record<string, any>>({
       {searchKey && (
         <div className="flex items-center gap-2">
           <Input
-            placeholder="搜尋..."
+            placeholder={language === "zh" ? "搜尋..." : "Search..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="max-w-sm"
@@ -259,7 +261,7 @@ export function DataTable<T extends Record<string, any>>({
             {table.getRowModel().rows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length + 1} className="h-24 text-center">
-                  沒有資料
+                  {language === "zh" ? "沒有資料" : "No data"}
                 </TableCell>
               </TableRow>
             ) : (
@@ -300,12 +302,15 @@ export function DataTable<T extends Record<string, any>>({
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-600">
-          顯示 {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} -{" "}
-          {Math.min(
-            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-            filteredData.length
-          )}{" "}
-          筆，共 {filteredData.length} 筆
+          {language === "zh"
+            ? `顯示 ${table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} - ${Math.min(
+                (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                filteredData.length
+              )} 筆，共 ${filteredData.length} 筆`
+            : `Showing ${table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} - ${Math.min(
+                (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                filteredData.length
+              )} of ${filteredData.length}`}
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -314,7 +319,7 @@ export function DataTable<T extends Record<string, any>>({
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            上一頁
+            {language === "zh" ? "上一頁" : "Previous"}
           </Button>
           <Button
             variant="outline"
@@ -322,7 +327,7 @@ export function DataTable<T extends Record<string, any>>({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            下一頁
+            {language === "zh" ? "下一頁" : "Next"}
           </Button>
         </div>
       </div>

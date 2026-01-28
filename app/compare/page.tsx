@@ -10,6 +10,7 @@ import { X } from "lucide-react";
 import { loadPlayersData, loadLineupsData, Player, Lineup, CompetitionType, Season, AVAILABLE_SEASONS, DEFAULT_SEASON } from "@/lib/data-service";
 import { DisplayUnit, getDisplayValue, PLAYER_FIELDS, LINEUP_FIELDS, DISPLAY_UNITS, isPercentageField, formatAsPercentage } from "@/lib/constants";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } from "recharts";
+import { useLanguage } from "@/components/LanguageProvider";
 
 type CompareItem = Player | Lineup;
 
@@ -67,6 +68,8 @@ const COMPARE_FIELDS = [
 ];
 
 export default function ComparePage() {
+  const { language } = useLanguage();
+  const isZh = language === "zh";
   const [players, setPlayers] = useState<Player[]>([]);
   const [lineups, setLineups] = useState<Lineup[]>([]);
   const [loading, setLoading] = useState(true);
@@ -209,7 +212,7 @@ export default function ComparePage() {
   const radarData = useMemo(() => {
     return COMPARE_FIELDS.map((field) => {
       const dataPoint: Record<string, any> = {
-        field: fieldMappings[field]?.zh || field,
+        field: (isZh ? fieldMappings[field]?.zh : fieldMappings[field]?.en) || field,
       };
       selectedItemsData.forEach((meta, index) => {
         const value = getDisplayValue(meta.item, field, unit);
@@ -217,7 +220,7 @@ export default function ComparePage() {
       });
       return dataPoint;
     });
-  }, [selectedItemsData, unit, fieldMappings]);
+  }, [selectedItemsData, unit, fieldMappings, isZh]);
 
   // Calculate diff
   const diffData = useMemo(() => {
@@ -243,7 +246,7 @@ export default function ComparePage() {
       <div className="min-h-screen bg-gray-50">
         <Navigation />
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center">載入中...</div>
+          <div className="text-center">{isZh ? "載入中..." : "Loading..."}</div>
         </div>
       </div>
     );
@@ -253,12 +256,14 @@ export default function ComparePage() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6 text-slate-900">比較模式</h1>
+        <h1 className="text-3xl font-bold mb-6 text-slate-900">
+          {isZh ? "比較模式" : "Compare"}
+        </h1>
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "players" | "lineups")}>
           <TabsList>
-            <TabsTrigger value="players">球員</TabsTrigger>
-            <TabsTrigger value="lineups">陣容</TabsTrigger>
+            <TabsTrigger value="players">{isZh ? "球員" : "Players"}</TabsTrigger>
+            <TabsTrigger value="lineups">{isZh ? "陣容" : "Lineups"}</TabsTrigger>
           </TabsList>
 
           <TabsContent value={activeTab} className="mt-6">
@@ -266,7 +271,9 @@ export default function ComparePage() {
               {/* Unit Selector */}
               <div className="flex items-center gap-4 flex-wrap">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium">顯示單位:</label>
+                  <label className="text-sm font-medium">
+                    {isZh ? "顯示單位:" : "Display Unit:"}
+                  </label>
                   <Select value={unit} onValueChange={(v) => setUnit(v as DisplayUnit)}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue />
@@ -274,7 +281,7 @@ export default function ComparePage() {
                     <SelectContent>
                       {DISPLAY_UNITS.map((u) => (
                         <SelectItem key={u.value} value={u.value}>
-                          {u.label.zh}
+                          {u.label[language]}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -283,7 +290,9 @@ export default function ComparePage() {
                 
                 {/* Data Source Selectors */}
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium">數據來源 - 賽季:</label>
+                  <label className="text-sm font-medium">
+                    {isZh ? "數據來源 - 賽季:" : "Data Source - Season:"}
+                  </label>
                   <select
                     value={dataSeason}
                     onChange={(e) => setDataSeason(e.target.value as Season)}
@@ -298,13 +307,15 @@ export default function ComparePage() {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium">比賽類型:</label>
+                  <label className="text-sm font-medium">
+                    {isZh ? "比賽類型:" : "Competition:"}
+                  </label>
                   <select
                     value={dataCompetition}
                     onChange={(e) => setDataCompetition(e.target.value as CompetitionType)}
                     className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm"
                   >
-                    <option value="regular">例行賽</option>
+                    <option value="regular">{isZh ? "例行賽" : "Regular Season"}</option>
                     <option value="playin">Play-in</option>
                     <option value="playoff">Playoff</option>
                   </select>
@@ -312,7 +323,9 @@ export default function ComparePage() {
                 
                 {activeTab === "lineups" && (
                   <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium">陣容大小:</label>
+                    <label className="text-sm font-medium">
+                      {isZh ? "陣容大小:" : "Lineup Size:"}
+                    </label>
                     <div className="flex gap-2">
                       {([2, 3, 4, 5] as const).map((size) => (
                         <Button
@@ -322,7 +335,7 @@ export default function ComparePage() {
                           onClick={() => setLineupSize(size)}
                           className="h-8"
                         >
-                          {size}人
+                          {isZh ? `${size}人` : `${size}`}
                         </Button>
                       ))}
                     </div>
@@ -332,7 +345,11 @@ export default function ComparePage() {
 
               {/* Selection Table */}
               <div className="bg-white rounded-lg border p-4">
-                <h2 className="text-xl font-semibold mb-4">選擇項目 (最多5個，可跨賽季比較)</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  {isZh
+                    ? "選擇項目 (最多5個，可跨賽季比較)"
+                    : "Select Items (up to 5, cross-season supported)"}
+                </h2>
                 <DataTable
                   data={currentData}
                   columns={activeTab === "players" ? ["player_name", "team_name", "PTS", "AST", "ORtg", "DRtg"] : ["lineup_player_names", "team_name", "PTS", "PTS_allowed", "ORtg", "DRtg"]}
@@ -352,14 +369,22 @@ export default function ComparePage() {
               {/* Selected Items Cards */}
               {selectedItemsData.length > 0 && (
                 <div className="space-y-4">
-                  <h2 className="text-xl font-semibold">已選擇項目 ({selectedItemsData.length}/5)</h2>
+                  <h2 className="text-xl font-semibold">
+                    {isZh
+                      ? `已選擇項目 (${selectedItemsData.length}/5)`
+                      : `Selected Items (${selectedItemsData.length}/5)`}
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {selectedItemsData.map((meta, index) => {
                       const name =
                         activeTab === "players"
                           ? (meta.item as Player).player_name
                           : (meta.item as Lineup).lineup_player_names;
-                      const competitionLabel = meta.competition === "regular" ? "例行賽" : meta.competition === "playin" ? "Play-in" : "Playoff";
+                      const competitionLabel = meta.competition === "regular"
+                        ? (isZh ? "例行賽" : "Regular Season")
+                        : meta.competition === "playin"
+                          ? "Play-in"
+                          : "Playoff";
                       return (
                         <div
                           key={meta.id}
@@ -385,7 +410,7 @@ export default function ComparePage() {
                               return (
                                 <div key={field} className="flex justify-between">
                                   <span className="text-gray-600">
-                                    {fieldMappings[field]?.zh}:
+                                    {isZh ? fieldMappings[field]?.zh : fieldMappings[field]?.en}:
                                   </span>
                                   <span className="tabular-nums font-medium">
                                     {typeof value === "number"
@@ -408,7 +433,9 @@ export default function ComparePage() {
               {/* Radar Chart */}
               {selectedItemsData.length > 0 && (
                 <div className="bg-white rounded-lg border p-4">
-                  <h2 className="text-xl font-semibold mb-4">雷達圖比較</h2>
+                  <h2 className="text-xl font-semibold mb-4">
+                    {isZh ? "雷達圖比較" : "Radar Comparison"}
+                  </h2>
                   <ResponsiveContainer width="100%" height={400}>
                     <RadarChart data={radarData}>
                       <PolarGrid />
@@ -419,7 +446,11 @@ export default function ComparePage() {
                           activeTab === "players"
                             ? (meta.item as Player).player_name
                             : (meta.item as Lineup).lineup_player_names;
-                        const competitionLabel = meta.competition === "regular" ? "例行賽" : meta.competition === "playin" ? "Play-in" : "Playoff";
+                        const competitionLabel = meta.competition === "regular"
+                          ? (isZh ? "例行賽" : "Regular Season")
+                          : meta.competition === "playin"
+                            ? "Play-in"
+                            : "Playoff";
                         const label = `${name} (${meta.season} ${competitionLabel})`;
                         return (
                           <Radar
@@ -441,13 +472,17 @@ export default function ComparePage() {
               {/* Diff Mode */}
               {selectedItemsData.length >= 2 && (
                 <div className="bg-white rounded-lg border p-4">
-                  <h2 className="text-xl font-semibold mb-4">差異模式 (A - B)</h2>
+                  <h2 className="text-xl font-semibold mb-4">
+                    {isZh ? "差異模式 (A - B)" : "Diff Mode (A - B)"}
+                  </h2>
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">基準 (A)</label>
+                      <label className="text-sm font-medium mb-2 block">
+                        {isZh ? "基準 (A)" : "Base (A)"}
+                      </label>
                       <Select value={diffBase || ""} onValueChange={setDiffBase}>
                         <SelectTrigger>
-                          <SelectValue placeholder="選擇基準項目" />
+                          <SelectValue placeholder={isZh ? "選擇基準項目" : "Select base"} />
                         </SelectTrigger>
                         <SelectContent>
                           {selectedItemsData.map((meta) => {
@@ -455,7 +490,11 @@ export default function ComparePage() {
                               activeTab === "players"
                                 ? (meta.item as Player).player_name
                                 : (meta.item as Lineup).lineup_player_names;
-                            const competitionLabel = meta.competition === "regular" ? "例行賽" : meta.competition === "playin" ? "Play-in" : "Playoff";
+                            const competitionLabel = meta.competition === "regular"
+                              ? (isZh ? "例行賽" : "Regular Season")
+                              : meta.competition === "playin"
+                                ? "Play-in"
+                                : "Playoff";
                             const label = `${name} (${meta.season} ${competitionLabel})`;
                             return (
                               <SelectItem key={meta.id} value={meta.id}>
@@ -467,10 +506,12 @@ export default function ComparePage() {
                       </Select>
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block">目標 (B)</label>
+                      <label className="text-sm font-medium mb-2 block">
+                        {isZh ? "目標 (B)" : "Target (B)"}
+                      </label>
                       <Select value={diffTarget || ""} onValueChange={setDiffTarget}>
                         <SelectTrigger>
-                          <SelectValue placeholder="選擇目標項目" />
+                          <SelectValue placeholder={isZh ? "選擇目標項目" : "Select target"} />
                         </SelectTrigger>
                         <SelectContent>
                           {selectedItemsData.map((meta) => {
@@ -478,7 +519,11 @@ export default function ComparePage() {
                               activeTab === "players"
                                 ? (meta.item as Player).player_name
                                 : (meta.item as Lineup).lineup_player_names;
-                            const competitionLabel = meta.competition === "regular" ? "例行賽" : meta.competition === "playin" ? "Play-in" : "Playoff";
+                            const competitionLabel = meta.competition === "regular"
+                              ? (isZh ? "例行賽" : "Regular Season")
+                              : meta.competition === "playin"
+                                ? "Play-in"
+                                : "Playoff";
                             const label = `${name} (${meta.season} ${competitionLabel})`;
                             return (
                               <SelectItem key={meta.id} value={meta.id}>
@@ -500,7 +545,9 @@ export default function ComparePage() {
                           : (isPositive ? "text-red-600" : "text-green-600");
                         return (
                           <div key={field} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                            <span className="text-sm">{fieldMappings[field]?.zh}</span>
+                            <span className="text-sm">
+                              {isZh ? fieldMappings[field]?.zh : fieldMappings[field]?.en}
+                            </span>
                             <span className={`tabular-nums font-medium ${color}`}>
                               {isPercentageField(field)
                                 ? `${isPositive ? "+" : ""}${formatAsPercentage(value, field)}`

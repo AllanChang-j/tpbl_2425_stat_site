@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { loadLineupsData, getUniqueTeams, Lineup, CompetitionType, Season, AVAILABLE_SEASONS, DEFAULT_SEASON } from "@/lib/data-service";
 import { DisplayUnit, getFieldKey, LINEUP_FIELDS, UNIT_INDEPENDENT_FIELDS } from "@/lib/constants";
+import { useLanguage } from "@/components/LanguageProvider";
 
 // Get all available columns from the first data row
 function getAllColumns(data: Lineup[]): string[] {
@@ -134,6 +135,8 @@ const DEFAULT_COLUMNS = [
 ];
 
 export default function LineupsPage() {
+  const { language } = useLanguage();
+  const isZh = language === "zh";
   const [data, setData] = useState<Lineup[]>([]);
   const [loading, setLoading] = useState(true);
   const [lineupSize, setLineupSize] = useState<2 | 3 | 4 | 5>(5);
@@ -226,7 +229,7 @@ export default function LineupsPage() {
       <div className="min-h-screen bg-gray-50">
         <Navigation />
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center">載入中...</div>
+          <div className="text-center">{isZh ? "載入中..." : "Loading..."}</div>
         </div>
       </div>
     );
@@ -237,10 +240,12 @@ export default function LineupsPage() {
       <Navigation />
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-slate-900">陣容數據</h1>
+          <h1 className="text-3xl font-bold text-slate-900">
+            {isZh ? "陣容數據" : "Lineup Stats"}
+          </h1>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">賽季:</label>
+              <label className="text-sm font-medium">{isZh ? "賽季:" : "Season:"}</label>
               <select
                 value={season}
                 onChange={(e) => setSeason(e.target.value as Season)}
@@ -258,12 +263,14 @@ export default function LineupsPage() {
               onChange={(e) => setCompetition(e.target.value as CompetitionType)}
               className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm"
             >
-              <option value="regular">例行賽</option>
+              <option value="regular">{isZh ? "例行賽" : "Regular Season"}</option>
               <option value="playin">Play-in</option>
               <option value="playoff">Playoff</option>
             </select>
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">陣容大小:</label>
+              <label className="text-sm font-medium">
+                {isZh ? "陣容大小:" : "Lineup Size:"}
+              </label>
               <div className="flex gap-2">
                 {([2, 3, 4, 5] as const).map((size) => (
                   <Button
@@ -273,20 +280,24 @@ export default function LineupsPage() {
                     onClick={() => setLineupSize(size)}
                     className="h-8"
                   >
-                    {size}人
+                    {isZh ? `${size}人` : `${size}`}
                   </Button>
                 ))}
               </div>
             </div>
             <Sheet open={showColumnSelector} onOpenChange={setShowColumnSelector}>
               <SheetTrigger asChild>
-                <Button variant="outline">選擇欄位 ({selectedColumns.length})</Button>
+                <Button variant="outline">
+                  {isZh ? "選擇欄位" : "Columns"} ({selectedColumns.length})
+                </Button>
               </SheetTrigger>
               <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
                 <SheetHeader>
-                  <SheetTitle>選擇顯示欄位</SheetTitle>
+                  <SheetTitle>{isZh ? "選擇顯示欄位" : "Select Columns"}</SheetTitle>
                   <SheetDescription>
-                    選擇要在表格中顯示的欄位。已選擇 {selectedColumns.length} 個欄位。
+                    {isZh
+                      ? `選擇要在表格中顯示的欄位。已選擇 ${selectedColumns.length} 個欄位。`
+                      : `Select columns to display. ${selectedColumns.length} selected.`}
                   </SheetDescription>
                 </SheetHeader>
                 <div className="mt-4 space-y-2">
@@ -296,21 +307,21 @@ export default function LineupsPage() {
                       size="sm"
                       onClick={() => setSelectedColumns(allColumns)}
                     >
-                      全選
+                      {isZh ? "全選" : "Select All"}
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setSelectedColumns(DEFAULT_COLUMNS)}
                     >
-                      預設
+                      {isZh ? "預設" : "Default"}
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setSelectedColumns([])}
                     >
-                      清除
+                      {isZh ? "清除" : "Clear"}
                     </Button>
                   </div>
                   {allColumns.map((col) => (
@@ -330,7 +341,9 @@ export default function LineupsPage() {
                         htmlFor={`col-${col}`}
                         className="text-sm font-normal cursor-pointer flex-1"
                       >
-                        {LINEUP_FIELDS[col]?.zh || col} ({LINEUP_FIELDS[col]?.en || col})
+                        {isZh
+                          ? LINEUP_FIELDS[col]?.zh || col
+                          : LINEUP_FIELDS[col]?.en || col}
                       </label>
                     </div>
                   ))}
